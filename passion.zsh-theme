@@ -16,7 +16,7 @@ fi
 
 # time
 function real_time() {
-    local color="%{$fg_no_bold[cyan]%}";                    # color in PROMPT need format in %{XXX%} which is not same with echo
+    local color="%{$fg_no_bold[magenta]%}";                    # color in PROMPT need format in %{XXX%} which is not same with echo
     local time="[$(date +%H:%M:%S)]";
     local color_reset="%{$reset_color%}";
     echo "${color}${time}${color_reset}";
@@ -50,11 +50,12 @@ function login_info() {
 
 # directory
 function directory() {
-    local color="%{$fg_no_bold[cyan]%}";
+    local color="%{$fg_bold[blue]%}";
     # REF: https://stackoverflow.com/questions/25944006/bash-current-working-directory-with-replacing-path-to-home-folder
-    local directory="${PWD/#$HOME/~}";
+    #local directory="${PWD/#$HOME/~}";
+	local directory="%c";
     local color_reset="%{$reset_color%}";
-    echo "${color}[${directory}]${color_reset}";
+    echo "${color}${directory}${color_reset}";
 }
 
 
@@ -116,7 +117,7 @@ output_command_execute_after() {
 
     # time
     local time="[$(date +%H:%M:%S)]"
-    local color_time="$fg_no_bold[cyan]";
+    local color_time="$fg_no_bold[magenta]";
     time="${color_time}${time}${color_reset}";
 
     # cost
@@ -128,11 +129,20 @@ output_command_execute_after() {
     then
         cost="0${cost}"
     fi
-    cost="[cost ${cost}s]"
-    local color_cost="$fg_no_bold[cyan]";
+	
+	local color_cost="";
+	if $1;
+	then
+		color_cost="$fg_no_bold[magenta]";
+	else
+		color_cost="$fg_no_bold[red]";
+	fi
+
+    cost="[cost ${cost}s] >>";
+	# local color_cost="$fg_no_bold[red]";
     cost="${color_cost}${cost}${color_reset}";
 
-    echo -e "${time} ${cost} ${cmd}";
+    echo -e "${cost} ${cmd}";
     echo -e "";
 }
 
@@ -207,7 +217,15 @@ TRAPALRM() {
     fi
 }
 
+user() {
+    local color="%{$fg_bold[magenta]%}";                    # color in PROMPT need format in %{XXX%} which is not same with echo
+    local user="[ 💻 Yong]";
+    local color_reset="%{$reset_color%}";
+    echo "${color}${user}${color_reset}";
+}
+
 
 # prompt
 # PROMPT='$(real_time) $(login_info) $(directory) $(git_status)$(command_status) ';
-PROMPT='$(real_time) $(directory) $(git_status)$(command_status) ';
+PROMPT='$(real_time) $(directory) $(git_status)
+$(user) $(command_status) ';
